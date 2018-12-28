@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Filmsoon Web</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="css/reset.css">
+		<link rel="stylesheet" type="text/css" href="styles.css">
+		<link rel="stylesheet" type="text/css" href="font/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="font/font-awesome.css">
+
+
+</head>
+<body>
+	<!-- <html style="width: 1300px;"> -->
+	<header class="clearfix">
+
+		<div class="bg">
+			
+			<div id="logo">
+					<a href="index.html"><img src="images/logo.png"></a>
+					<div id="sub">#รู้ก่อนดูหนังสักนิดก็ดี</div>	
+				
+
+			</div>
+			</div>
+	
+	</header>
+	<div class="menu clearfix">
+
+		<div class="wrapper">
+			<div class="menu-bar">
+		
+				<div id="home"><a href="index.html">หน้าแรก</a></div>
+				<div id="submenu">
+					<a href="index2.html">ข่าวหนังอัพเดท&nbsp;&nbsp;&nbsp;</a>
+					<a href="#">ตัวอย่างหนัง&nbsp;&nbsp;&nbsp;</a>
+					<a href="#">บทวิจารณ์&nbsp;&nbsp;&nbsp;</a>
+					<a href="#">บทความพิเศษ&nbsp;&nbsp;&nbsp;</a>
+					<a href="#">เกี่ยวกับเว็บไซต์</a>
+				</div><!-- submenu -->
+				<div class="line"></div>
+			</div>
+			<div id="sub-img">
+				<div class="img-header">
+					<div class="carousel">
+  <div class="carousel__control"> </div>
+  <div class="carousel__stage">
+    <div class="spinner spinner--left">
+      <div class="spinner__face js-active" data-bg="#27323c">
+        <div class="content" data-type="carousel-1">
+          <div class="content__left">
+            <a href="#"><img src="images/image-header.jpg">
+            <div class="caption-img">ผู้กำกับ อธิบายเหตุที่ทำให้ฮัลค์ พูดได้ในหนัง THOR : RACNAROK</div></a>
+          </div>
+          
+        </div>
+      </div>
+      <div class="spinner__face" data-bg="#19304a">
+        <div class="content" data-type="carousel-2">
+          <div class="content__left">
+            <img src="images/image-header2.jpg">
+            <div class="caption-img">บทวิจารณ์   :&nbsp;SPIDER MAN : HOMECOMING</div>
+          </div>
+          
+        </div>
+      </div>
+      <div class="spinner__face" data-bg="#2b2533">
+        <div class="content" data-type="carousel-3">
+          <div class="content__left">
+            <img src="images/image-header3.jpg">
+            <div class="caption-img">BOX OFFICE : no.1 IT , no.2 AMERICAN ASSASSIN , no.3 MOTHER</div>
+          </div>
+          
+        </div>
+      </div>
+      <div class="spinner__face" data-bg="#312f2d">
+        <div class="content" data-type="carousel-4">
+          <div class="content__left">
+            <img src="images/image-header4.jpg">
+            <div class="caption-img">เผยโฉมหุ่นใหม่ในตัวอย่างใหม่ PACIFIC RIM : UPRISING</div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="height: 0; width: 0; overflow: hidden"> <img src="images/image-header.jpg">
+ <img src="images/image-header.jpg">
+ <img src="images/image-header.jpg">
+ <img src="images/image-header.jpg">
+ <img src="images/image-header.jpg"></div>
+<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script> 
+<script>
+'use strict';
+var activeIndex = 0;
+var limit = 0;
+var disabled = false;
+var $stage = undefined;
+var $controls = undefined;
+var canvas = false;
+var SPIN_FORWARD_CLASS = 'js-spin-fwd';
+var SPIN_BACKWARD_CLASS = 'js-spin-bwd';
+var DISABLE_TRANSITIONS_CLASS = 'js-transitions-disabled';
+var SPIN_DUR = 1000;
+var appendControls = function appendControls() {
+    for (var i = 0; i < limit; i++) {
+        $('.carousel__control').append('<a href="#" data-index="' + i + '"></a>');
+    }
+    var height = $('.carousel__control').children().last().outerHeight();
+    $('.carousel__control').css('height', 30 + limit * height);
+    $controls = $('.carousel__control').children();
+    $controls.eq(activeIndex).addClass('active');
+};
+var setIndexes = function setIndexes() {
+    $('.spinner').children().each(function (i, el) {
+        $(el).attr('data-index', i);
+        limit++;
+    });
+};
+var duplicateSpinner = function duplicateSpinner() {
+    var $el = $('.spinner').parent();
+    var html = $('.spinner').parent().html();
+    $el.append(html);
+    $('.spinner').last().addClass('spinner--right');
+    $('.spinner--right').removeClass('spinner--left');
+};
+var paintFaces = function paintFaces() {
+    $('.spinner__face').each(function (i, el) {
+        var $el = $(el);
+        var color = $(el).attr('data-bg');
+        $el.children().css('backgroundImage', 'url(' + getBase64PixelByColor(color) + ')');
+    });
+};
+var getBase64PixelByColor = function getBase64PixelByColor(hex) {
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.height = 1;
+        canvas.width = 1;
+    }
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = hex;
+        ctx.fillRect(0, 0, 1, 1);
+        return canvas.toDataURL();
+    }
+    return false;
+};
+var prepareDom = function prepareDom() {
+    setIndexes();
+    paintFaces();
+    duplicateSpinner();
+    appendControls();
+};
+var spin = function spin() {
+    var inc = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
+    if (disabled)
+        return;
+    if (!inc)
+        return;
+    activeIndex += inc;
+    disabled = true;
+    if (activeIndex >= limit) {
+        activeIndex = 0;
+    }
+    if (activeIndex < 0) {
+        activeIndex = limit - 1;
+    }
+    var $activeEls = $('.spinner__face.js-active');
+    var $nextEls = $('.spinner__face[data-index=' + activeIndex + ']');
+    $nextEls.addClass('js-next');
+    if (inc > 0) {
+        $stage.addClass(SPIN_FORWARD_CLASS);
+    } else {
+        $stage.addClass(SPIN_BACKWARD_CLASS);
+    }
+    $controls.removeClass('active');
+    $controls.eq(activeIndex).addClass('active');
+    setTimeout(function () {
+        spinCallback(inc);
+    }, SPIN_DUR, inc);
+};
+var spinCallback = function spinCallback(inc) {
+    $('.js-active').removeClass('js-active');
+    $('.js-next').removeClass('js-next').addClass('js-active');
+    $stage.addClass(DISABLE_TRANSITIONS_CLASS).removeClass(SPIN_FORWARD_CLASS).removeClass(SPIN_BACKWARD_CLASS);
+    $('.js-active').each(function (i, el) {
+        var $el = $(el);
+        $el.prependTo($el.parent());
+    });
+    setTimeout(function () {
+        $stage.removeClass(DISABLE_TRANSITIONS_CLASS);
+        disabled = false;
+    }, 100);
+};
+var attachListeners = function attachListeners() {
+    document.onkeyup = function (e) {
+        switch (e.keyCode) {
+        case 38:
+            spin(-1);
+            break;
+        case 40:
+            spin(1);
+            break;
+        }
+    };
+    $controls.on('click', function (e) {
+        e.preventDefault();
+        if (disabled)
+            return;
+        var $el = $(e.target);
+        var toIndex = parseInt($el.attr('data-index'), 10);
+        spin(toIndex - activeIndex);
+    });
+};
+var assignEls = function assignEls() {
+    $stage = $('.carousel__stage');
+};
+var init = function init() {
+    assignEls();
+    prepareDom();
+    attachListeners();
+};
+$(function () {
+    init();
+});
+</script>
+				<a href="#"><img src="images/image-header.jpg"></a>
+
+				</div><!-- img-header -->
+				
+			</div>
+			<div class="news shadow">
+				<!-- <div id="shadow"> -->
+					<div id="box1">
+						<div id="bg1">
+
+							<a href="#"><img src="images/new-1.jpg"></a>
+							<div class="line L-box1"></div>
+						</div><!-- bg1 -->
+						<div id="font">
+							<a href="#"><h1>ผมเพิ่งรู้ว่าผู้กำกับ Avenger <br>ข้ามฝั่งมากำกับ Justice league!?</h1>
+							<h2>25 ก.ค. 60 | ดู: 875 </h2></a></div>
+					</div>
+					
+					
+					<div id="box2">
+						<div id="bg2">
+							<a href="#"><img src="images/new-2.jpg"></a>
+							<div class="line L-box2"></div>
+						</div><!-- bg2 -->	
+						<div id="font">
+							<a href="#"><h1>มาร์เวลปฎิเสธที่จะออนไลน์ฟุตเทจแรกของ<br>
+							Avenger: Infinity War จากงานคอมมิค-คอน</h1>
+							<h2>23 ก.ค. 60 | ดู: 1200</h2></a>
+						</div>
+					</div>	
+					<div id="box3">
+						<div id="bg3">
+						<a href="#"><img src="images/new-3.jpg"></a>
+						<div class="line L-box3"></div>		
+					</div><!-- bg3 -->
+					<div id="font">
+					<a href="#"><h1>ฮัลค์และทอร์จับเข่าคุยกันในตัวอย่างใหม่<br> 
+					THOR: RACNAROK</h1>
+					<h2>22 ก.ค. 60 | ดู: 998</h2></a>
+					</div>
+				
+					</div>
+			  		<div id="box4">
+			   	 		<div id="font">
+			   	 			<a href="#"><h3>ดูข่าวทั้งหมด</h3></a>
+			   	 		</div>
+			   	 	<div class="line L-box4"></div>		
+					</div>
+				<!-- </div> -->
+				<div id="box5">
+					<div id="bg4"> 
+						<a href="#"><img src="images/new-4.jpg"></a>
+							<div id="font">
+								<a href="#"><h4>SPIDER-MAN: Homecoming</h4></a>
+								<div id="sub2">7 ก.ค. 60 | ดู: 655</div>
+							</div>
+						<div id="star">
+							<fieldset class="rating">
+    						<input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="Awesome - 5 stars"></label>
+    						<input type="radio" id="star4half" name="rating" value="4 and a half" /><label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
+						    <input type="radio" id="star4" name="rating" value="4" /><label class = "full" for="star4" title="Pretty good - 4 stars"></label>
+						    <input type="radio" id="star3half" name="rating" value="3 and a half" /><label class="half" for="star3half" title="Meh - 3.5 stars"></label>
+						    <input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="Meh - 3 stars"></label>
+						    <input type="radio" id="star2half" name="rating" value="2 and a half" /><label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
+						    <input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
+						    <input type="radio" id="star1half" name="rating" value="1 and a half" /><label class="half" for="star1half" title="Meh - 1.5 stars"></label>
+						    <input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="Sucks big time - 1 star"></label>
+						    <input type="radio" id="starhalf" name="rating" value="half" /><label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
+							</fieldset>
+							<!-- <img src="images/fivestar.png"> -->
+						</div>	
+					</div><!-- bg4 -->
+					<div id="jan">บทวิจารณ์</div>
+					<div id="bg5">
+						<a href="#"><img src="images/bg5.png"></a>
+						  <a href="#"><div id="content">
+						  	TRANFORMER: The last Knight
+						  </div></a>
+						  		
+						  			<h5>1 ก.ค. 60 | ดู: 865</h5>
+						<div id="star2">
+						<fieldset class="rating">
+						    <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="Awesome - 5 stars"></label>
+						    <input type="radio" id="star4half" name="rating" value="4 and a half" /><label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
+						    <input type="radio" id="star4" name="rating" value="4" /><label class = "full" for="star4" title="Pretty good - 4 stars"></label>
+						    <input type="radio" id="star3half" name="rating" value="3 and a half" /><label class="half" for="star3half" title="Meh - 3.5 stars"></label>
+						    <input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="Meh - 3 stars"></label>
+						    <input type="radio" id="star2half" name="rating" value="2 and a half" /><label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
+						    <input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
+						    <input type="radio" id="star1half" name="rating" value="1 and a half" /><label class="half" for="star1half" title="Meh - 1.5 stars"></label>
+						    <input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="Sucks big time - 1 star"></label>
+						    <input type="radio" id="starhalf" name="rating" value="half" /><label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
+						</fieldset> 			
+							<!-- <img src="images/twostar.png"> -->
+						</div>		
+					</div><!-- bg5 -->
+					<div id="bg6">
+						<a href="#"><img src="images/bg6.jpg"></a>
+							<a href="#"></ABBR><div id="content2">
+								Wonder Woman
+							</div></a>
+								<div id="date1">20 มิ.ย. 60 | ดู: 865</div>
+							<div id="star3">
+								<fieldset class="rating">
+						    <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="Awesome - 5 stars"></label>
+						    <input type="radio" id="star4half" name="rating" value="4 and a half" /><label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
+						    <input type="radio" id="star4" name="rating" value="4" /><label class = "full" for="star4" title="Pretty good - 4 stars"></label>
+						    <input type="radio" id="star3half" name="rating" value="3 and a half" /><label class="half" for="star3half" title="Meh - 3.5 stars"></label>
+						    <input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="Meh - 3 stars"></label>
+						    <input type="radio" id="star2half" name="rating" value="2 and a half" /><label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
+						    <input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
+						    <input type="radio" id="star1half" name="rating" value="1 and a half" /><label class="half" for="star1half" title="Meh - 1.5 stars"></label>
+						    <input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="Sucks big time - 1 star"></label>
+						    <input type="radio" id="starhalf" name="rating" value="half" /><label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
+						</fieldset>
+								<!-- <img src="images/fivestars.png"> -->
+							</div>
+
+					</div><!-- bg6 -->
+					<div id="bg7">
+						<a href="#"><img src="images/bg7.jpg"></a>
+						<a href="#"><div id="content3">
+								Alien: Covenant
+							</div></a>
+									<div id="date2">10 มิ.ย. 60 | ดู: 1015</div>
+								<div id="star4">
+									<fieldset class="rating">
+						    <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="Awesome - 5 stars"></label>
+						    <input type="radio" id="star4half" name="rating" value="4 and a half" /><label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
+						    <input type="radio" id="star4" name="rating" value="4" /><label class = "full" for="star4" title="Pretty good - 4 stars"></label>
+						    <input type="radio" id="star3half" name="rating" value="3 and a half" /><label class="half" for="star3half" title="Meh - 3.5 stars"></label>
+						    <input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="Meh - 3 stars"></label>
+						    <input type="radio" id="star2half" name="rating" value="2 and a half" /><label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
+						    <input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
+						    <input type="radio" id="star1half" name="rating" value="1 and a half" /><label class="half" for="star1half" title="Meh - 1.5 stars"></label>
+						    <input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="Sucks big time - 1 star"></label>
+						    <input type="radio" id="starhalf" name="rating" value="half" /><label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
+						</fieldset>
+									<!-- <img src="images/threestar.png"> -->
+								</div>
+					</div>
+					<div class="kg a">
+							<a href="#"><div id="jan2">บทวิจารณ์ทั้งหมด</div></a>
+							<div class="line L-box5"></div>	
+					</div>
+				</div>
+				<div id="box6">
+					<div id="boxoffice">BOX OFFICE</div>
+					<div id="content4">#1 IT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 60.10 M<br><br>
+					#2 American Assassin &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.85 M<br><br>
+					#3 Mother&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.53 M<br><br>
+					#4 Home Again&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.18 M<br><br>
+					#5 The Hitman’s Bodyguard&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.59 M<br><br>
+					#6 Wild River&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.57 M</div>
+						<div id="mother">
+							<img src="images/mother.jpg">
+						</div>
+						<div id="american">
+							<img src="images/american.jpg">
+						</div>
+						<div id="it">
+							<img src="images/it.jpg">
+						</div>
+					<div class="line L-box6"></div>
+				</div>
+					<div id="box7">
+						<a href="#"><div id="content5">ตัวอย่างหนังใหม่</div></a>
+						<object width='310' height='230'>
+							<param name='movie' value='http://www.youtube.com/v/iO9LvRgYFvo'></param>
+							<param name='wmode' value='transparent'></param>
+							<embed src='http://www.youtube.com/v/iO9LvRgYFvo' type='application/x-shockwave-flash' wmode='transparent' width='310' height='230'>
+							</embed>
+						</object>
+						<div id="thor">THOR: RACNAROK</div>
+						
+							<h6 width='310' height='230'>
+							<param name='movie' value='http://www.youtube.com/v/zB4I68XVPzQ&t=63s'></param>
+							<param name='wmode' value='transparent'></param>
+							<embed src='http://www.youtube.com/v/zB4I68XVPzQ&t=63s' type='application/x-shockwave-flash' wmode='transparent' width='310' height='230'>
+							</embed>
+							</h6>
+						<div id="jedi">Star War: The Last Jedi</div>
+						<div class="line L-box7"></div>
+					
+					</div>
+					<footer>
+						<div id="footer">
+							<div class="caption-img Editshadow">ติดต่อเว็บไซต์การนำข้อมูลไปใช้เผยแพร่เกี่ยวกับ Filmsoon.com<br><br>
+									Copyright <i class="fa fa-copyright" aria-hidden="true"></i> 2013-2014 Filmsoon.com All rights reserved. | e-mail: filmsoon@gmail.com
+							</div>
+							<div class="images-bgfooter"><img src="images/footer.jpg"></div>
+								
+						</div><!-- footer -->
+						
+					</footer>
+						<script type="text/javascript">
+					       $(document).ready(function(){
+					         $('.bxslider').bxSlider();
+					       });
+					 	</script>
+			</div>
+  		</div>
+	
+</body>
+</html>
